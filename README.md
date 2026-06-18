@@ -75,18 +75,20 @@ Each task inside the Databricks Workflow has isolated retry settings. If a singl
 ```text
 ├── code/
 │   ├── Bronze_Layer/
-│   │   └── Bronze_Layer.py      # Configuration-driven ingestion loop
+│   │   └── Bronze_Layer.py            # Looping configuration ingestion notebook
 │   ├── Silver_Layer/
-│   │   ├── Silver_crm_cust_info.py
-│   │   ├── Silver_crm_prd_info.py
-│   │   ├── Silver_crm_sales_details.py
-│   │   ├── Silver_erp_cust_az12.py
-│   │   ├── Silver_erp_loc_a101.py
-│   │   └── Silver_erp_px_cat_g1v2.py
+│   │   ├── CRM/
+│   │   │   ├── Silver_crm_cust_info.py
+│   │   │   ├── Silver_crm_prd_info.py
+│   │   │   └── Silver_crm_sales_details.py
+│   │   └── ERP/
+│   │       ├── Silver_erp_cust_az12.py
+│   │       ├── Silver_erp_loc_a101.py
+│   │       └── Silver_erp_px_cat_g1v2.py
 │   └── Gold_Layer/
-│       ├── dim_customers.py           # Customer dimension pipeline
-│       ├── dim_products.py            # Product dimension pipeline
-│       └── fact_sales.py              # Optimized sales fact pipeline
-├── images/
-│   └── pipeline_dag.png               # Databricks workflow graph screenshot
+│       ├── dim_customers.py           # Customer Dimension Notebook
+│       ├── dim_products.py            # Product Dimension Notebook
+│       └── fact_sales.py              # Sales Fact Notebook (Optimized)
+├── doc/
+│   └── pipeline_dag.png               # Databricks Workflows DAG Screenshot
 └── README.md
