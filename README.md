@@ -8,7 +8,7 @@ The pipeline extracts raw operational records from separate CRM and ERP source s
 
 Pipeline execution and task dependencies are managed using **Databricks Workflows** deployed on serverless compute.
 
-![Databricks Workflow DAG](images/pipeline_dag.png)
+![Databricks Workflow DAG](doc/medallion_workflow.png)
 
 ## ⚙️ Pipeline Workflow & Execution
 
