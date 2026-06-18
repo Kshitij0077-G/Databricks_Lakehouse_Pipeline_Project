@@ -10,10 +10,18 @@ Pipeline execution and task dependencies are managed using **Databricks Workflow
 
 ![Databricks Workflow DAG](images/pipeline_dag.png)
 
-### Execution Mechanics:
-* **Bronze (Configuration Ingestion):** The pipeline kicks off with a single metadata-driven notebook. It processes an ingestion array to load all six source CSV files into their respective Bronze Delta tables in one task. This eliminates notebook sprawl and keeps the ingestion baseline centralized.
-* **Silver (Concurrent Transformations):** Once the raw data lands, the workflow fans out to trigger six dedicated cleaning notebooks simultaneously. Running these tasks in parallel avoids a single-file line bottleneck and significantly drops pipeline runtime.
-* **Gold (Analytical Convergence):** The separate data streams converge to build the analytical Star Schema. The pipeline processes both dimension tables concurrently. The final step triggers the sales fact notebook only after the lookup dimensions are fully loaded to protect referential integrity.
+## ⚙️ Pipeline Workflow & Execution
+
+The Databricks workspace executes the data pipeline through three distinct phases:
+
+*   **Phase 1: Central Raw Ingestion (Bronze)** 
+    The pipeline starts with a single notebook that reads and loads all six raw CSV files into Bronze Delta tables. Handling all raw sources inside one central notebook keeps the initial setup clean and easy to manage.
+
+*   **Phase 2: Parallel Cleaning Tasks (Silver)** 
+    Once the raw data is ready, the pipeline splits into six parallel tasks to clean each table simultaneously. Running these cleaning notebooks at the exact same time prevents a long waiting line and drastically cuts down the total runtime.
+
+*   **Phase 3: Star Schema Assembly (Gold)** 
+    The separate clean data streams come together to build the final reporting tables. The pipeline updates both the customer and product dimension tables together, then triggers the central sales fact notebook last so that all lookup data is fully ready.
 
 ---
 
@@ -49,16 +57,16 @@ The Gold layer transforms the clean Silver data into a Star Schema model designe
 
 ---
 
-## 🚀 Engineering Design Decisions & Optimizations
+## 🚀 System Design & Optimizations
 
-### Network Shuffle Reduction
-Fact table compilation typically incurs high cloud network costs due to data shuffling during multi-table joins. Because the lookup dimension tables (`dim_products` and `dim_customers`) are small relative to the high-volume transactional sales records, the execution plan uses **Broadcast Hints**. This instructs Spark to copy the dimensions directly to all active worker nodes, executing a localized map-side join and eliminating network-heavy shuffles.
+### Optimizing Star Schema Queries
+Joining heavy transactional sales data with dimension tables can slow down Spark because it moves data across the network (known as a shuffle). Since the `dim_products` and `dim_customers` tables are relatively small, we use **Broadcast Hints**. This copies the small lookup tables directly to every active worker node, turning an expensive network shuffle into a fast local join.
 
-### Pipeline Idempotency
-To guarantee data reliability, every processing tier applies data overwrites combined with schema overwrite options. If a scheduled pipeline run fails mid-way due to external cloud infrastructure or network timeouts, the workflow can be safely re-triggered from the beginning without risking duplicate records or schema mutations.
+### Safe Pipeline Restarts (Rerun-Safe)
+To prevent data corruption and duplication, every notebook writes data using an overwrite mode (`.mode("overwrite")`). If the pipeline fails halfway through due to a cloud glitch or network timeout, you can safely restart the whole job from the beginning without creating duplicate rows or breaking the table schemas.
 
-### Granular Fault Recovery
-Each task within the Databricks Workflow DAG is configured with isolated retry thresholds. If an individual notebook experiences a transient storage timeout, Databricks automatically retries only that specific node, keeping the remaining unaffected parallel execution tasks running uninterrupted.
+### Handling Temporary Failures
+Each task inside the Databricks Workflow has isolated retry settings. If a single notebook fails because of a temporary storage or network issue, Databricks automatically retries only that specific step. The other parallel tasks keep running smoothly without stopping or crashing the entire pipeline.
 
 ---
 
@@ -67,7 +75,7 @@ Each task within the Databricks Workflow DAG is configured with isolated retry t
 ```text
 ├── code/
 │   ├── Bronze_Layer/
-│   │   └── Ingest_Raw_Sources.py      # Configuration-driven ingestion loop
+│   │   └── Bronze_Layer.py      # Configuration-driven ingestion loop
 │   ├── Silver_Layer/
 │   │   ├── Silver_crm_cust_info.py
 │   │   ├── Silver_crm_prd_info.py
