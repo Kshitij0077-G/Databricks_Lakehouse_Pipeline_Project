@@ -1,1 +1,37 @@
 
+# ==========================================
+# Data & Storage (Never push raw data to Git)
+# ==========================================
+*.csv
+*.xlsx
+*.json
+*.parquet
+*.delta
+data/
+outputs/
+
+# ==========================================
+# Python & Environment Files
+# ==========================================
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ==========================================
+# Configuration & Secret Keys
+# ==========================================
+.env
+*.secret
+credentials.json
+.databricks/
+
+# ==========================================
+# Local IDE Settings (VS Code / Mac)
+# ==========================================
+.vscode/
+.DS_Store
+
+
