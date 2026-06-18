@@ -94,8 +94,14 @@ Each task inside the Databricks Workflow has isolated retry settings. If a singl
 └── README.md
 
 
+```
+
+---
+
 ## 🛡️ License
 This project is open-source and available under the **MIT License**. You are completely free to use, modify, and share this code for your own projects or learning.
 
-🔎 About Me
+---
+
+## 🔎 About Me
 Hi, I’m Kshitij Gudekar — a former Data Analyst expanding my expertise into Data Engineering. While my professional experience centers on turning data into clear business decisions, this project highlights my focus on data architecture: designing scalable Medallion pipelines, optimizing ETL workflows for speed, and implementing safe, repeatable data transformations that engineering teams can rely on.
