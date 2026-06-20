@@ -73,7 +73,10 @@ Each task inside the Databricks Workflow has isolated retry settings. If a singl
 ## 📂 Repository Structure
 
 ```text
-├── code/
+|
+├── script/
+|   ├── Schema_Setup
+|   |   └── Schema_Setup.py            # Create Lakehouse Schemas
 │   ├── Bronze_Layer/
 │   │   └── Bronze_Layer.py            # Looping configuration ingestion notebook
 │   ├── Silver_Layer/
